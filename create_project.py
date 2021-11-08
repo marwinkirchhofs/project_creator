@@ -31,7 +31,7 @@ supported_languages = "c cpp python".split()
 ############################################################
 
 
-def create_project(language, app_name, create_dir=True, **args):
+def create_project(app_name, language="", create_dir=True, **args):
     """Create a project for the given language -> basically calls the respective 
     create_project_* function
 
@@ -67,13 +67,16 @@ def create_project(language, app_name, create_dir=True, **args):
     ##############################
     # LANGUAGE-SPECIFIC PROJECT CREATION
     ##############################
+    # First get the respective project generator object, then invoke it
 
     if language == "c":
         pass
     elif language == "cpp":
         pass
     elif language == "python":
-        create_project_python(app_name)
+        pj = Python_Project_Creator()
+
+    pj.create_project(app_name, args)
     
     return 0
 
@@ -89,14 +92,16 @@ if __name__ == "__main__":
     ##############################
     
     parser = OptionParser()
+    # LANGUAGE
     parser.add_option("-l",
             dest="language",
             help="""the language for which to build a project; valid options:
 """ + ", ".join(supported_languages)
 )
-    parser.add_option("-p",
+    # PYTHON - SOURCE DIR
+    parser.add_option("--py_src_dir",
             action="store_true",
-            dest="renew_plot",
+            dest="py_src_dir",
             help="if set, the corresponding plot will be renewed using \
 plot_template_single_layer",
             )
@@ -114,7 +119,6 @@ plot_template_single_layer",
     if not args:
         parser.error("Application name not specified!")
 
-    language = options.language
     app_name = args[0]
 
     ##############################
@@ -122,6 +126,6 @@ plot_template_single_layer",
     ##############################
     # use the function exit code as the script exit code
 
-    sys.exit( create_project(language, app_name, options) )
+    sys.exit( create_project(app_name, **options.__dict__) )
 
 

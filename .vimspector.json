@@ -1,0 +1,17 @@
+{
+    "configurations": {
+        "myapp: Launch": {
+            "adapter": "debugpy",
+            "configuration": {
+                "name": "myapp: Launch",
+                "type": "python",
+                "request": "launch",
+                "cwd": "$HOME/Programming/Projects/create_project",
+                "stopOnEntry": true,
+                "console": "externalTerminal",
+                "debugOptions": [],
+                "program": "./create_project.py"
+            }
+        }
+    }
+}
