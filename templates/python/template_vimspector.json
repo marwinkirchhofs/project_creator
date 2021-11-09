@@ -1,19 +1,18 @@
 {
     "configurations": {
-        "create_project: Launch": {
+        "_T_APP_NAME_T_: Launch": {
             "adapter": "debugpy",
             "configuration": {
-                "name": "create_project: Launch",
+                "name": "_T_APP_NAME_T_: Launch",
                 "args": [
-                    "-l", "python", "--py_pkg", "My_Pkg", "--vimspector", "my_new_app"
                 ],
                 "type": "python",
                 "request": "launch",
-                "cwd": "$HOME/Programming/Projects/create_project",
+                "cwd": "_TT_CWD_TT_",
                 "stopOnEntry": true,
                 "console": "externalTerminal",
                 "debugOptions": [],
-                "program": "./create_project.py"
+                "program": "./_T_APP_NAME_T_.py"
             },
             "breakpoints": {
                 "exception": {

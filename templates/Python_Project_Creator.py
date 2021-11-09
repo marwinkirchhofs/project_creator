@@ -109,7 +109,37 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
             return 0
 
 
-    def create_project(self, app_name, py_pkg=False, **args):
+    def __create_vimspector(self, app_name, pkg_dir):
+
+        ##############################
+        # READ TEMPLATE FILE
+        ##############################
+
+        template = self._load_template(
+                self.TEMPLATES_ABS_PATH + "/template_vimspector.json", app_name, 
+                pkg_dir)
+
+        ##############################
+        # ADAPT
+        ##############################
+        # basically handle the special template placeholders (indicated by 
+        # '_TT_*_TT_' instead of '_T_*_T_')
+
+        template_out = list(map(
+            lambda s: s.replace("_TT_CWD_TT_", os.getcwd()), template
+            ))
+
+        ##############################
+        # WRITE PROJECT FILE
+        ##############################
+
+        with open (".vimspector.json", "w") as f_out:
+            f_out.writelines(template_out)
+
+        return 0
+
+
+    def create_project(self, app_name, py_pkg=False, vimspector=False, **args):
         """Create a python project from the template in this directory
 
         :app_name:  The name for the application -> the main file
@@ -123,10 +153,12 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
 
         # DETERMINE SRC_DIR
         # TODO: maybe there is a better and more generic spot for this to go to
-        src_dir = self._get_str_src_dir(py_pkg) if py_pkg else False
+        pkg_dir = self._get_str_src_dir(py_pkg) if py_pkg else False
 
         # LAUNCH FILE CREATION
-        self.__create_main(app_name, src_dir)
-        self.__create_init(app_name, src_dir)
+        self.__create_main(app_name, pkg_dir)
+        self.__create_init(app_name, pkg_dir)
+        if vimspector:
+            self.__create_vimspector(app_name, pkg_dir)
 
         return 0

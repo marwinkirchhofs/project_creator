@@ -97,7 +97,13 @@ if __name__ == "__main__":
             dest="language",
             help="""the language for which to build a project; valid options:
 """ + ", ".join(supported_languages)
-)
+            )
+    # VIMSPECTOR
+    parser.add_option("--vimspector",
+            action="store_true",
+            dest="vimspector",
+            help="if set, a vimspector config will be created",
+            )
     # PYTHON - SOURCE DIR
     parser.add_option("--py_pkg",
 #             action="store_true",
