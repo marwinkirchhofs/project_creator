@@ -4,6 +4,9 @@
             "adapter": "debugpy",
             "configuration": {
                 "name": "myapp: Launch",
+                "args": [
+                    "-l", "python", "--py_pkg", "my_new_app"
+                ],
                 "type": "python",
                 "request": "launch",
                 "cwd": "$HOME/Programming/Projects/create_project",
@@ -11,6 +14,12 @@
                 "console": "externalTerminal",
                 "debugOptions": [],
                 "program": "./create_project.py"
+            },
+            "breakpoints": {
+                "exception": {
+                    "caught": "",
+                    "uncaught": "Y"
+                }
             }
         }
     }

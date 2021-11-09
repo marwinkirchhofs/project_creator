@@ -11,20 +11,20 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
 
 
     def __init__(self):
-        Project_Creator.__init__(self, "python")
+        super().__init__("python")
         self.language = "python"
 
 
-    def __create_main(app_name, src_dir):
+    def __create_main(self, app_name, src_dir):
         
         ##############################
         # READ TEMPLATE FILE
         ##############################
 
-#     with open (_TEMPLATES_ABS_PATH_ + "/python/template_main.py", "r") as f_in:
+#     with open (TEMPLATES_ABS_PATH_ + "/python/template_main.py", "r") as f_in:
 #         template = f_in.readlines()
-        template = __load_template(
-                self.__TEMPLATES_ABS_PATH + "/python/template_main.py", 
+        template = self._load_template(
+                self.TEMPLATES_ABS_PATH + "/template_main.py", 
                 app_name, src_dir)
 
         ##############################
@@ -33,16 +33,17 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
         # basically handle the special template placeholders (indicated by 
         # '_TT_*_TT_' instead of '_T_*_T_')
 
-        template_out = ""
+        template_out = []
 
         for line in template:
 
             # SOURCE DIRECTORY
             if re.match(r'.*_TT_IMPORT_SRC_DIR_TT_.*', line):
                 if src_dir:
-                    template_out.append(
-    """# import """ + src_dir + """package
-    from """ + src_dir + """import *""")
+                    template_out.extend([
+                        "# import " + src_dir + " package\n",
+                        "from " + src_dir + " import *\n"
+                    ])
                 else:
                     pass
 
@@ -66,73 +67,66 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
         return 0
 
 
-    def __create_init(app_name, src_dir):
-        
-        ##############################
-        # READ TEMPLATE FILE
-        ##############################
+    def __create_init(self, app_name, src_dir):
 
-        template = __load_template(
-                self.__TEMPLATES_ABS_PATH + "/python/template_init.py", 
-                app_name, src_dir)
+        # if src_dir is not given, there is no need for an __init__ file, so 
+        # just exit
+        if not src_dir:
+            return 0
+        else:
+            
+            ##############################
+            # READ TEMPLATE FILE
+            ##############################
 
-        ##############################
-        # CREATE SOURCE DIRECTORY
-        ##############################
+            template = self._load_template(
+                    self.TEMPLATES_ABS_PATH + "/template_init.py", app_name, 
+                    src_dir)
 
-        # (normally src_dir shouldn't exist, but why not check)
-        if not os.path.isdir(src_dir):
-            os.mkdir(src_dir)
+            ##############################
+            # CREATE SOURCE DIRECTORY
+            ##############################
 
-        ##############################
-        # ADAPT
-        ##############################
-        # basically handle the special template placeholders (indicated by 
-        # '_TT_*_TT_' instead of '_T_*_T_')
+            # (normally src_dir shouldn't exist, but why not check)
+            if not os.path.isdir(src_dir):
+                os.mkdir(src_dir)
 
-        template_out = ""
+            ##############################
+            # ADAPT
+            ##############################
+            # basically handle the special template placeholders (indicated by 
+            # '_TT_*_TT_' instead of '_T_*_T_')
 
-        for line in template:
+            template_out = template
 
-            # SOURCE DIRECTORY
-            if re.match(r'.*_TT_IMPORT_SRC_DIR_TT_.*', line):
-                if src_dir:
-                    template_out.append(
-    """# import """ + src_dir + """package
-    from """ + src_dir + """import *""")
-                else:
-                    pass
+            ##############################
+            # WRITE PROJECT FILE
+            ##############################
 
-            # SOME DUMMY OPTION
-            elif re.match(r'some_dummy', line):
-                pass
+            with open (src_dir + "/__init__.py", "w") as f_out:
+                f_out.writelines(template_out)
 
-            # NOTHING SPECIAL
-            # -> copy the line over
-            else:
-                template_out.append(line)
+            return 0
 
 
-        ##############################
-        # WRITE PROJECT FILE
-        ##############################
-
-        with open (src_dir + "__init__.py", "w") as f_out:
-            f_out.writelines(template_out)
-
-        return 0
-
-
-    def create_project(app_name, py_src_dir=False, **args):
+    def create_project(self, app_name, py_pkg=False, **args):
         """Create a python project from the template in this directory
 
         :app_name:  The name for the application -> the main file
-        :src_dir:   String or Bool; Handles the creation of a source directory within the project directory that gets imported by the top level file. If a string, the directory is named after the string, if True, the directory is named "src". If False or empty, no directory is created
+        :src_dir:   String or Bool; Handles the creation of a source directory 
+        within the project directory that gets imported by the top level file.  
+        If a string, the directory is named after the string, if True, the 
+        directory is named "src". If False or empty, no directory is created
         :returns:   TODO
 
         """
 
-        __create_main(app_name, py_src_dir)
-#         __create_init()
+        # DETERMINE SRC_DIR
+        # TODO: maybe there is a better and more generic spot for this to go to
+        src_dir = self._get_str_src_dir(py_pkg) if py_pkg else False
+
+        # LAUNCH FILE CREATION
+        self.__create_main(app_name, src_dir)
+        self.__create_init(app_name, src_dir)
 
         return 0

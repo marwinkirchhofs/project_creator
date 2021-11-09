@@ -76,7 +76,7 @@ def create_project(app_name, language="", create_dir=True, **args):
     elif language == "python":
         pj = Python_Project_Creator()
 
-    pj.create_project(app_name, args)
+    pj.create_project(app_name, **args)
     
     return 0
 
@@ -99,13 +99,14 @@ if __name__ == "__main__":
 """ + ", ".join(supported_languages)
 )
     # PYTHON - SOURCE DIR
-    parser.add_option("--py_src_dir",
-            action="store_true",
-            dest="py_src_dir",
+    parser.add_option("--py_pkg",
+#             action="store_true",
+            dest="py_pkg",
             help="if set, the corresponding plot will be renewed using \
 plot_template_single_layer",
             )
 
+    # PARSE ARGS
     (options, args) = parser.parse_args()
 
     ##############################
