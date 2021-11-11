@@ -139,7 +139,9 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
         return 0
 
 
-    def create_project(self, app_name, py_pkg=False, vimspector=False, **args):
+    def create_project(self, app_name, 
+            py_pkg=False, vimspector=False, git=False,
+            **args):
         """Create a python project from the template in this directory
 
         :app_name:  The name for the application -> the main file
@@ -160,5 +162,8 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
         self.__create_init(app_name, pkg_dir)
         if vimspector:
             self.__create_vimspector(app_name, pkg_dir)
+        if git:
+            self._create_git(app_name)
+
 
         return 0

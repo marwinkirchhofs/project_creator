@@ -9,7 +9,8 @@
 # have the subclasses calling this super-constructor which sets up the necessary 
 # variable. Straightforward, huh?
 
-import os, re
+import os, re, shutil
+from git import Repo
 
 
 class Project_Creator():
@@ -106,6 +107,23 @@ class Project_Creator():
             l_lines ))
 
         return l_lines
+
+
+    def _create_git(self, app_name):
+        """Create a git repo and copy the respective gitignore template
+
+        :app_name: TODO
+        :returns: TODO
+
+        """
+
+        # CREATE REPO
+        repo = Repo.init()
+        assert not repo.bare
+
+        # COPY GITIGNORE
+        shutil.copy(f"{self.TEMPLATES_ABS_PATH}/template_gitignore",
+                    ".gitignore")
 
 
     def create_project(self):

@@ -98,15 +98,20 @@ if __name__ == "__main__":
             help="""the language for which to build a project; valid options:
 """ + ", ".join(supported_languages)
             )
+    # GIT REPO
+    parser.add_option("--git",
+            action="store_true",
+            dest="git",
+            help="if set, a git repo will be created",
+            )
     # VIMSPECTOR
     parser.add_option("--vimspector",
             action="store_true",
             dest="vimspector",
             help="if set, a vimspector config will be created",
             )
-    # PYTHON - SOURCE DIR
+    # PYTHON - PACKAGE DIR
     parser.add_option("--py_pkg",
-#             action="store_true",
             dest="py_pkg",
             help="if set, the corresponding plot will be renewed using \
 plot_template_single_layer",
