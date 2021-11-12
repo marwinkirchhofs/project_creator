@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+
+#######################################
+# BUILD
+#######################################
+
+.PHONY: build_debug
+build_debug:
+	cd debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
+	make -C debug
+
+.PHONY: build_release
+build_release:
+	cd release && cmake -DCMAKE_BUILD_TYPE=Release ..
+	make -C release
+
+.PHONY: build_maxopt
+build_maxopt:
+	cd maxopt && cmake -DCMAKE_CXX_FLAGS="${DCMAKE_CXX_FLAGS} -Ofast -march=native" ..
+	make -C maxopt
+
+#######################################
+# RUN
+#######################################
+
+.PHONY: release
+release:	build_release
+	cd $@ && ./_T_APP_NAME_T_
+
+.PHONY: debug
+debug:		build_debug
+	cd $@ && ./_T_APP_NAME_T_
+
+.PHONY: maxopt
+maxopt:		build_maxopt
+	cd $@ && ./_T_APP_NAME_T_

@@ -71,17 +71,22 @@ class Cpp_Project_Creator(Project_Creator.Project_Creator):
 
         name_debug_dir = "debug"        
         name_release_dir = "release"
+        name_maxopt_dir = "maxopt"
 
-        for name_dir in [name_debug_dir, name_release_dir]:
+        for name_dir in [name_debug_dir, name_release_dir, name_maxopt_dir]:
             if not os.path.isdir(name_dir):
                 os.mkdir(name_dir)
 
         ##############################
-        # READ TEMPLATE FILE
+        # READ TEMPLATE FILES
         ##############################
 
-        template = self._load_template(
+        template_cmakelists = self._load_template(
                 self.TEMPLATES_ABS_PATH + "/template_cmakelists.txt", app_name
+                )
+
+        template_makefile = self._load_template(
+                self.TEMPLATES_ABS_PATH + "/template_makefile", app_name
                 )
 
         ##############################
@@ -90,14 +95,14 @@ class Cpp_Project_Creator(Project_Creator.Project_Creator):
         # basically handle the special template placeholders (indicated by 
         # '_TT_*_TT_' instead of '_T_*_T_')
 
-        template_out = []
+        cmakelists_out = []
 
-        for line in template:
+        for line in template_cmakelists:
 
             # SOURCE DIRECTORY
             if re.match(r'.*_TT_CUDA_TT_.*', line):
                 if cuda:
-                    template_out.extend([
+                    cmakelists_out.extend([
                         "include(CheckLanguage)\n",
                         "check_language(CUDA)\n",
                         "\n",
@@ -120,25 +125,28 @@ class Cpp_Project_Creator(Project_Creator.Project_Creator):
 
             elif re.match(r'.*_TT_ADD_EXECUTABLE_TT_.*', line):
                 if cuda:
-                    template_out.extend([
+                    cmakelists_out.extend([
                         "add_executable(${PROJECT_NAME} ${CPP_SRCS} ${CUDA_SRCS})",
                     ])
                 else:
-                    template_out.extend([
+                    cmakelists_out.extend([
                         "add_executable(${PROJECT_NAME} ${CPP_SRCS})",
                     ])
 
             # NOTHING SPECIAL
-            # -> copy the line over
+            # -> copy over the line
             else:
-                template_out.append(line)
+                cmakelists_out.append(line)
 
         ##############################
-        # WRITE PROJECT FILE
+        # WRITE PROJECT FILES
         ##############################
 
         with open ("CMakeLists.txt", "w") as f_out:
-            f_out.writelines(template_out)
+            f_out.writelines(cmakelists_out)
+
+        with open ("makefile", "w") as f_out:
+            f_out.writelines(template_makefile)
 
         return 0
 
