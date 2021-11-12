@@ -1,0 +1,27 @@
+{
+    "configurations": {
+        "_T_APP_NAME_T_: Launch": {
+            "adapter": "vscode-cpptools",
+            "configuration": {
+                "name": "_T_APP_NAME_T_: Launch",
+                "args": [
+                ],
+                "type": "cpp",
+                "request": "launch",
+                "cwd": "_TT_CWD_TT_",
+                "stopOnEntry": true,
+                "console": "externalTerminal",
+                "debugOptions": [],
+                "program": "debug/_T_APP_NAME_T_",
+                "externalConsole": true
+            },
+            "breakpoints": {
+                "exception": {
+                    "caught": "",
+                    "raised": "Y",
+                    "uncaught": "Y"
+                }
+            }
+        }
+    }
+}

@@ -72,7 +72,7 @@ def create_project(app_name, language="", create_dir=True, **args):
     if language == "c":
         pass
     elif language == "cpp":
-        pass
+        pj = Cpp_Project_Creator()
     elif language == "python":
         pj = Python_Project_Creator()
 
@@ -92,25 +92,36 @@ if __name__ == "__main__":
     ##############################
     
     parser = OptionParser()
-    # LANGUAGE
+
+    # GLOBAL
+    # language
     parser.add_option("-l",
             dest="language",
             help="""the language for which to build a project; valid options:
 """ + ", ".join(supported_languages)
             )
-    # GIT REPO
+    # git repo
     parser.add_option("--git",
             action="store_true",
             dest="git",
             help="if set, a git repo will be created",
             )
-    # VIMSPECTOR
+    # vimspector
     parser.add_option("--vimspector",
             action="store_true",
             dest="vimspector",
             help="if set, a vimspector config will be created",
             )
-    # PYTHON - PACKAGE DIR
+
+    # CPP
+    # cuda
+    parser.add_option("--cuda",
+            dest="cuda",
+            help="if set, cuda support will be added to CMakeLists.txt",
+            )
+
+    # PYTHON
+    # package dir
     parser.add_option("--py_pkg",
             dest="py_pkg",
             help="if set, the corresponding plot will be renewed using \

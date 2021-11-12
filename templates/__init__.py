@@ -7,4 +7,5 @@ sys.path.append( _TEMPLATES_ABS_PATH_ )
 
 # from create_project_python import Project_Creator_Python
 from Project_Creator import Project_Creator
+from Cpp_Project_Creator import Cpp_Project_Creator
 from Python_Project_Creator import Python_Project_Creator
