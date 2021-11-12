@@ -27,6 +27,10 @@ create_project [options] <app_name>
 
 ###### c/cpp
 
+| option | action |
+| --- | --- |
+| ```--cuda ``` | add cuda support to ```CMakeLists.txt``` |
+
 ## adding a new template
 
 Adding a new template requires a few steps and classes/functions to be 
@@ -55,7 +59,7 @@ the time and I also simply might not have the time :-D
       additional **\*\*args** is helpful for effectively ignoring everything 
       else
   * implement the separate template parsing functions (boilerplate scheme is 
-    given below)
+    given below -> TODO)
 ###### TEMPLATE PACKAGE LOADING
   * add the new class to the template package import script 
     (*templates/\__init__.py*)
