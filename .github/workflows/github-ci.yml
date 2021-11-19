@@ -30,15 +30,12 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Python Test Run
         run: |
-          pwd
-          ls -a
-          tree -L 3
-          python3 create_project -l python --vimspector --git --py_pkg test_pkg test_project
+          python3 create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
           cd test_project
           ./test_project.py
       - name: Cpp Test Run
         run: |
-          python3 create_project -l cpp --vimspector --git --cuda test_project
+          ./create_project.py -l cpp --vimspector --git --cuda test_project
           cd test_project
           make debug
 
