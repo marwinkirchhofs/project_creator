@@ -34,9 +34,6 @@ jobs:
         run: |
           ./create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
           cd test_project
-          ls -l
-          chmod 755 test_project.py
-          ls -l
           ./test_project.py
       - name: Cpp Test Run
         run: |
