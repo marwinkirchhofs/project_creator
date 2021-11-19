@@ -33,8 +33,8 @@ jobs:
       - name: Python Test Run
         run: |
           python3 create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
-          echo "project created"
           cd test_project
+          chmod ugo+x test_project.py
           ./test_project.py
       - name: Cpp Test Run
         run: |
