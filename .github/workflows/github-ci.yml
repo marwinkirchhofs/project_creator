@@ -36,7 +36,9 @@ jobs:
           pwd
           cd test_project
           pwd
+          ls -a
           chmod ugo+x test_project.py
+          ls -a
           python3 test_project.py
       - name: Cpp Test Run
         run: |
