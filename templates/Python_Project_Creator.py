@@ -61,11 +61,14 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
         # WRITE PROJECT FILE
         ##############################
 
+        print("error 1")
         with open (app_name + ".py", "w") as f_out:
             f_out.writelines(template_out)
+        print("error 2")
 
         # EXECUTION PERMISSIONS
         os.chmod(f"{app_name}.py", 111)
+        print("error 3")
 
         return 0
 
