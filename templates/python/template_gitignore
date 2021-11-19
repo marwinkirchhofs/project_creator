@@ -1,0 +1,9 @@
+*__pycache__*
+
+# hidden files/directories
+.*
+!.gitignore
+!.vimspector.json
+
+# personal workflow directories
+tags

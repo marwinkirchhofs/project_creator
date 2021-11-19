@@ -116,6 +116,7 @@ if __name__ == "__main__":
     # CPP
     # cuda
     parser.add_option("--cuda",
+            action="store_true",
             dest="cuda",
             help="if set, cuda support will be added to CMakeLists.txt",
             )

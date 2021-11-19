@@ -8,7 +8,6 @@
                 ],
                 "type": "python",
                 "request": "launch",
-                "cwd": "_TT_CWD_TT_",
                 "stopOnEntry": true,
                 "console": "externalTerminal",
                 "debugOptions": [],
