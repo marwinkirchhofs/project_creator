@@ -32,10 +32,9 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Python Test Run
         run: |
-          python3 create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
+          ./create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
           cd test_project
-          chmod 755 test_project.py
-          python3 test_project.py
+          ./test_project.py
       - name: Cpp Test Run
         run: |
           ./create_project.py -l cpp --vimspector --git --cuda test_project
