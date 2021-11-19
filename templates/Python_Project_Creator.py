@@ -64,8 +64,8 @@ class Python_Project_Creator(Project_Creator.Project_Creator):
         with open (app_name + ".py", "w") as f_out:
             f_out.writelines(template_out)
 
-        # EXECUTION PERMISSIONS
-        os.chmod(f"{app_name}.py", 755)
+        # EXECUTION/READ PERMISSIONS
+        os.chmod(f"{app_name}.py", (7<<6)+(5<<3)+5)
 
         return 0
 
