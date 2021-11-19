@@ -33,9 +33,11 @@ jobs:
       - name: Python Test Run
         run: |
           python3 create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
+          pwd
           cd test_project
+          pwd
           chmod ugo+x test_project.py
-          ./test_project.py
+          python3 test_project.py
       - name: Cpp Test Run
         run: |
           ./create_project.py -l cpp --vimspector --git --cuda test_project
