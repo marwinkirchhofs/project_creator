@@ -33,7 +33,7 @@ jobs:
       - name: Python Test Run
         run: |
           python3 create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
-          [[ $? = 0 ]] && "Everything Good"
+          [[ $? = 0 ]] && print "Everything Good"
           pwd
           cd test_project
           pwd
