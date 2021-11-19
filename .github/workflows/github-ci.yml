@@ -32,9 +32,13 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Python Test Run
         run: |
+          whoami
+          user -a
           ls -l
           python3 create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
           cd test_project
+          ls -l
+          chmod ugo+rwx test_project.py
           ls -l
           python3 test_project.py
       - name: Cpp Test Run
