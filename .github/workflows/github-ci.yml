@@ -33,12 +33,13 @@ jobs:
       - name: Python Test Run
         run: |
           python3 create_project.py -l python --vimspector --git --py_pkg test_pkg test_project
+          [[ $? = 0 ]] && "Everything Good"
           pwd
           cd test_project
           pwd
-          ls -a
+          ls -l
           chmod ugo+x test_project.py
-          ls -a
+          ls -l
           python3 test_project.py
       - name: Cpp Test Run
         run: |
