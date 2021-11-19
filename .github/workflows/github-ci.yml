@@ -30,9 +30,10 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Python Test Run
         run: |
-          ./create_project -l python --vimspector --git --py_pkg test_pkg test_project
-          cd test_project
-          ./test_project.py
+          echo $(pwd)
+#          ./create_project -l python --vimspector --git --py_pkg test_pkg test_project
+#          cd test_project
+#          ./test_project.py
       - name: Cpp Test Run
         run: |
           ./create_project -l cpp --vimspector --git --cuda test_project
