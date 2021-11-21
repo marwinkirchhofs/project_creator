@@ -1,0 +1,356 @@
+#!/usr/bin/env bash
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+#                                       #
+#   RUN 'MAKE WORKSPACE' FIRST          #
+#                                       #
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+
+
+# PARAMETER FROM COMMAND LINE
+generate_stimuli    ?= "0"
+gui                 ?= "0"
+sim_top				?= "0"
+
+
+# ---- DON'T TOUCH FROM HERE ON ----
+
+
+############################################################
+# SRC FILES/DIRECTORIES
+############################################################
+
+TCL_DIR                         := tcl
+
+##############################
+# HARDWARE BUILD
+##############################
+
+XIL_IPS_DIR                     := xil_ips
+SIM_DIR                         := sim
+RTL_DIR                        	:= rtl
+TB_DIR                         	:= tb
+
+XIL_IP_COMPILE_FILES			= $(addsuffix /questa/compile.do, $(wildcard ${XIL_IPS_DIR}/*_sim))
+
+#### target dummy directory
+DUMMY_DIR						:= .Make_Dummies
+
+##############################
+# SOFTWARE
+##############################
+
+PRJ_NAME        		?= _T_APP_NAME_T_
+NAME_TEST_APP   		:= _T_APP_NAME_T__test_app
+
+# HARDWARE DEFINITIONS
+DIR_HW_OUT				:= hw
+
+HWDEF__TC_BOARD_NAME_TC__PLAIN	:= ${DIR_HW_OUT}/${PRJ_NAME}.hwdef
+BIT__TC_BOARD_NAME_TC__PLAIN		:= ${DIR_HW_OUT}/${PRJ_NAME}.bit
+HW__TC_BOARD_NAME_TC__PLAIN		:= ${HWDEF__TC_BOARD_NAME_TC__PLAIN} ${BIT__TC_BOARD_NAME_TC__PLAIN}
+
+HWDEF__TC_BOARD_NAME_TC__ILA		:= ${DIR_HW_OUT}/${PRJ_NAME}_hw_debug.hwdef
+BIT__TC_BOARD_NAME_TC__ILA		:= ${DIR_HW_OUT}/${PRJ_NAME}_hw_debug.bit
+HW__TC_BOARD_NAME_TC__ILA			:= ${HWDEF__TC_BOARD_NAME_TC__ILA} ${BIT__TC_BOARD_NAME_TC__ILA}
+
+# C APPLICATION
+TEST_APP_SRC			?= $(wildcard sw/${NAME_TEST_APP}/src/*.c)
+TEST_APP_SRC			+= $(wildcard sw/${NAME_TEST_APP}/src/*.h)
+
+# EXECUTABLES
+ELF__TC_BOARD_NAME_TC__PLAIN		:= xsdk_proj__TT_BOARD_NAME_TT__plain/${NAME_TEST_APP}/Debug/${NAME_TEST_APP}.elf
+ELF__TC_BOARD_NAME_TC__ILA		:= xsdk_proj__TT_BOARD_NAME_TT__ila/${NAME_TEST_APP}/Debug/${NAME_TEST_APP}.elf
+
+##############################
+# DOCUMENTATION
+##############################
+
+DIR_DOC					:= doc
+
+
+###########################################################
+# PARAMETERS
+###########################################################
+
+##############################
+# SOFTWARE BUILD FLOWS
+##############################
+# Variables that are common for both build flows and their resulting SDK 
+# projects
+
+PARAM_RUN			:= standalone
+PARAM_DEBUG			:= debug
+
+##############################
+# XSDK SCRIPTS
+##############################
+
+SCRIPT_PROJ			:= ${TCL_DIR}/xsdk_setup_proj.tcl
+SCRIPT_RUN			:= ${TCL_DIR}/xsdk_run_proj.tcl
+
+
+###########################################################
+# HELPER VARIABLES
+###########################################################
+
+# empty dummy files which are touched after the according make targets in order 
+# to not unnecessarily rerun targets which don't produce an output file of the 
+# same name (namingly vcompile)
+DIR_MAKE_DUMMIES := .Make_Dummies
+
+############################################################
+# PROGRAM ALIASES
+############################################################
+
+VIVADO							:= vivado
+
+
+############################################################
+# GENERAL PURPOSE TARGETS
+############################################################
+
+.PHONY: clean
+clean:
+	@echo "removing vivado temporary/log files..."
+	@rm -f vivado* webtalk* *.pb *.jou
+	@echo "removing makefile dummy files..."
+	@rm -f ${DUMMY_DIR}/*
+
+
+############################################################
+# FPGA TARGETS
+############################################################
+
+##############################
+# HARDWARE IMPLEMENTATION
+##############################
+#
+# Targets for generating all necessary hardware files including bitstream, 
+# hardware definition and debug probe files for the debug targets. For the 
+# different platforms, a 'hw_<platform>' and a 'hw_debug_<platform>' target can 
+# be present for incorporating a debug core. The debug core is integrated at 
+# block design level. The 'open_bd_*' targets are given for modifying or 
+# investigating the respective block designs. 
+# The plain hardware build uses Vivado's non-project workflow for a maximum of 
+# configurability. However, Vivado does not support debug cores at block-design 
+# level in non-project mode.  Hence, the debug hardware builds are performed 
+# using an in-memory-project workflow. For this reason, hardware configurations, 
+# even clock frequency, may differ between the two build options.
+#
+# (currently no dependency on the IP target needed as no ooc IPs are used)
+
+.PHONY:	hw__TT_BOARD_NAME_TT_
+hw__TT_BOARD_NAME_TT_: 
+	@${VIVADO} -mode batch 													\
+            -source ${TCL_DIR}/build_hw__TT_BOARD_NAME_TT_.tcl
+
+.PHONY:	hw_debug__TT_BOARD_NAME_TT_
+hw_debug__TT_BOARD_NAME_TT_: 
+	@${VIVADO} -mode batch 													\
+            -source ${TCL_DIR}/build_hw__TT_BOARD_NAME_TT_.tcl                        \
+            -tclargs debug
+
+.PHONY: clean_hw_debug__TT_BOARD_NAME_TT_
+clean_hw_debug__TT_BOARD_NAME_TT_:
+	rm -rf npe_accel_standalone_hw_debug.*
+
+DIR_PRJ_HW_OUT 	:= debug__T_APP_NAME_T_.runs/impl_1/
+HW_PRJ_NAME 	:= bd_debug_npe_accel_standalone_wrapper
+
+.PHONY: copy_debug_hw
+copy_debug_hw:
+	@mkdir -p hw/debug
+	@cp ${DIR_PRJ_HW_OUT}/${HW_PRJ_NAME}.bit 	\
+		hw/debug/debug__T_APP_NAME_T_.bit
+	@cp ${DIR_PRJ_HW_OUT}/${HW_PRJ_NAME}.hwdef 	\
+		hw/debug/debug__T_APP_NAME_T_.hwdef
+	@cp ${DIR_PRJ_HW_OUT}/${HW_PRJ_NAME}.sysdef 	\
+		hw/debug/debug__T_APP_NAME_T_.sysdef
+	@cp ${DIR_PRJ_HW_OUT}/${HW_PRJ_NAME}.ltx 	\
+		hw/debug/debug__T_APP_NAME_T_.ltx
+
+##############################
+# MODIFY BLOCK DESIGN
+##############################
+#
+# The hardware build options described above use a Vivado block-design as the 
+# top level design entity. The open_bd targets laod those block designs if 
+# present and open them in the Vivado GUI. If no according block design is 
+# present, the source files are loaded and the Vivado GUI is launched without an 
+# empty block design.  
+#
+# TODO: describe both block designs opened in in-memory-project
+
+.PHONY: open_bd__TT_BOARD_NAME_TT_
+open_bd__TT_BOARD_NAME_TT_:
+	@${VIVADO} -mode tcl			\
+			-source ${TCL_DIR}/open_bd__TT_BOARD_NAME_TT_.tcl
+
+.PHONY: open_bd_debug__TT_BOARD_NAME_TT_
+open_bd_debug__TT_BOARD_NAME_TT_:
+	@${VIVADO} -mode tcl 													\
+			-source ${TCL_DIR}/open_bd__TT_BOARD_NAME_TT_.tcl                         \
+            -tclargs debug
+
+
+###########################################################
+# SOFTWARE APPLICATION
+###########################################################
+
+# TODO: For simplicity, the xsdk project setup targets depend on the respective 
+# hwdef as well as the C application. It would be better to have only the 
+# application target depend on the C source because rebuilding the project is 
+# not necessary when just the application code has been changed. That would 
+# require adapting the tcl scripts accordingly, presumably separating the 
+# application build from the project build. So for now, the flow just rebuilds 
+# the entire project also when just the application has been adapted.
+
+##############################
+# PLAIN
+##############################
+
+.PHONY: proj_plain__TT_BOARD_NAME_TT_
+proj_plain__TT_BOARD_NAME_TT_:		${ELF__TC_BOARD_NAME_TC__PLAIN}
+
+${ELF__TC_BOARD_NAME_TC__PLAIN}:		${HW__TC_BOARD_NAME_TC__PLAIN}	${TEST_APP_SRC}
+	xsct ${SCRIPT_PROJ} plain _TT_BOARD_NAME_TT_
+
+.PHONY: run_plain__TT_BOARD_NAME_TT_
+run_plain__TT_BOARD_NAME_TT_:			${ELF__TC_BOARD_NAME_TC__PLAIN}	
+	xsct ${SCRIPT_RUN} 				\
+			plain 					\
+			_TT_BOARD_NAME_TT_				\
+			${PARAM_RUN}
+
+.PHONY: debug_plain__TT_BOARD_NAME_TT_
+debug_plain__TT_BOARD_NAME_TT_:		${ELF__TC_BOARD_NAME_TC__PLAIN}
+	xsct -interactive ${SCRIPT_RUN} \
+			plain 					\
+			_TT_BOARD_NAME_TT_				\
+			${PARAM_DEBUG}
+
+##############################
+# ILA
+##############################
+
+.PHONY: proj_ila__TT_BOARD_NAME_TT_
+proj_ila__TT_BOARD_NAME_TT_:			${ELF__TC_BOARD_NAME_TC__ILA}
+
+${ELF__TC_BOARD_NAME_TC__ILA}:		${HW__TC_BOARD_NAME_TC__PLAIN}	${TEST_APP_SRC}
+	xsct ${SCRIPT_PROJ} ila _TT_BOARD_NAME_TT_
+
+.PHONY: run_ila__TT_BOARD_NAME_TT_
+run_ila__TT_BOARD_NAME_TT_:			${ELF__TC_BOARD_NAME_TC__ILA}
+	xsct ${SCRIPT_RUN} 				\
+			ila 					\
+			_TT_BOARD_NAME_TT_				\
+			${PARAM_RUN}
+
+.PHONY: debug_ila__TT_BOARD_NAME_TT_
+debug_ila__TT_BOARD_NAME_TT_:			${ELF__TC_BOARD_NAME_TC__ILA}
+	xsct -interactive ${SCRIPT_RUN} \
+			ila 					\
+			_TT_BOARD_NAME_TT_				\
+			${PARAM_DEBUG}
+
+
+###########################################################
+# SIMULATION
+###########################################################
+
+.PHONY: vsim
+vsim: 									${DIR_MAKE_DUMMIES}/makeDummy_xil_ip_sim_scripts
+	make -C ${SIM_DIR} $@
+
+#############################
+# COMPILATION
+#############################
+
+.PHONY: vsim_compile
+vsim_compile: 							${DIR_MAKE_DUMMIES}/makeDummy_xil_ip_sim_scripts
+	make -C ${SIM_DIR} $@
+
+##############################
+# TEST PARAMETERIZATION
+##############################
+
+.PHONY: example_config
+example_config:
+	make -C ${SIM_DIR} $@
+
+
+############################################################
+# IP GENERATION TARGETS
+############################################################
+
+##############################
+# FOR SIMULATION
+##############################
+
+# * generate axi traffic generator coefficient files
+# * execute ip generation and export script
+# * make compile files executable
+# * copy memory initialization files to top-level directory to be read at simulation-time
+#
+# TODO: find a better way of identifying just the .mem files you need to be 
+# copied to sim (currently it's done by just taking .mem files from modules 
+# matching 'axi_traffic_gen*_sim')
+.PHONY: xil_ip_sim_scripts
+xil_ip_sim_scripts:							${DIR_MAKE_DUMMIES}/makeDummy_xil_ip_sim_scripts
+
+${DIR_MAKE_DUMMIES}/makeDummy_xil_ip_sim_scripts:	${TCL_DIR}/xil_ip_sim_scripts.tcl		\
+													${SIM_DIR}/axi_traffic_gen_coeffs.py
+# 	@echo "generating axi traffic generator coefficient files..."
+# 	@${SIM_DIR}/axi_traffic_gen_coeffs.py
+	@echo "generating IP simulation scripts..."
+	@${VIVADO} -mode batch -source ${TCL_DIR}/xil_ip_sim_scripts.tcl -tclargs ${XIL_IPS_DIR}
+	@echo ${XIL_IP_COMPILE_FILES}
+	@chmod ugo+x ${XIL_IP_COMPILE_FILES}
+# 	@echo "copying memory init file to top-level directory..."
+# 	cp ${XIL_IPS_DIR}/axi_traffic_gen*_sim/questa/*.mem ${SIM_DIR}
+	@echo "simulation files generated"
+	@touch $@
+
+##############################
+# FOR HW BUILD
+##############################
+
+.PHONY: ips
+ips:									${DUMMY_DIR}/makeDummy_ips
+
+${DUMMY_DIR}/makeDummy_ips:	${TCL_DIR}/setup_ips.tcl
+	@${VIVADO} -mode batch -source ${TCL_DIR}/setup_ips.tcl
+	@touch ${DUMMY_DIR}/makeDummy_ips
+
+
+###########################################################
+# DOCUMENTATION TARGETS
+###########################################################
+
+.PHONY:	doc
+doc:
+	@make -C ${DIR_DOC} doc
+
+
+############################################################
+# SETUP TARGETS
+############################################################
+
+.PHONY:	workspace
+workspace:
+	@echo "setting up workspace..."
+ifndef xil_compiled_lib_path
+	@echo ""
+	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	@echo "xil_compiled_lib_path is not specified! Simulation might be unfunctional if it includes Xilinx IPs or Vivado block-designs!"
+	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	@echo ""
+else
+	@echo "copying modelsim.ini to ${SIM_DIR}..."
+	@cp ${xil_compiled_lib_path}/modelsim.ini ${SIM_DIR}
+endif
+	@mkdir -p ${DIR_MAKE_DUMMIES}
+	@mkdir -p ${XIL_IPS_DIR}
+	@make -C ${SIM_DIR} workspace
+

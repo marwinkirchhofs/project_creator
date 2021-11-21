@@ -90,6 +90,8 @@ if __name__ == "__main__":
     ##############################
     # OPTION PARSING
     ##############################
+    # TODO: transfer the option setting to one function per project generator 
+    # class that gets the parser as an argument
     
     parser = OptionParser()
 
@@ -119,6 +121,38 @@ if __name__ == "__main__":
             action="store_true",
             dest="cuda",
             help="if set, cuda support will be added to CMakeLists.txt",
+            )
+
+    # HDL
+    # block design
+    parser.add_option("--bd",
+            action="store_true",
+            dest="bd",
+            help="if set, an environment for a vivado block design as top-level design is set up",
+            )
+    # simulation - questa
+    parser.add_option("--sim_questa",
+            action="store_true",
+            dest="sim_questa",
+            help="sets up questasim simulation",
+            )
+#     # simulation - verilator
+#     parser.add_option("--sim_verilator",
+#             action="store_true",
+#             dest="sim_verilator",
+#             help="sets up verilator simulation",
+#             )
+    # xip
+    parser.add_option("--xip",
+            action="store_true",
+            dest="xip",
+            help="if set, templates for using scripted Xilinx IPs are added (from Xilinx tool side more or less mutually exclusive with the --bd option)",
+            )
+    # xsdk
+    parser.add_option("--xsdk",
+            action="store_true",
+            dest="cuda",
+            help="if set, templates for an xsdk standalone application project will be integrated",
             )
 
     # PYTHON
